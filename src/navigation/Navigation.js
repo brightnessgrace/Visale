@@ -7,6 +7,7 @@ import ForgotPassword from '../screens/ForgotPasswordScreen';
 import Token from '../screens/Token'
 import ChangePassword from '../screens/ChangePassword';
 import Profile from '../components/Profile';
+import Editprofile from '../components/Editprofile';
 import { Header } from 'react-native/Libraries/NewAppScreen';
 import PrivacyPolicy from '../screens/PrivacyPolicyScreen';
 
@@ -25,6 +26,8 @@ const Navigation = () => {
                 <Stack.Screen name = 'ChangePassword' component = {ChangePassword} />
                 <Stack.Screen name = 'Token' component = {Token} />
                 <Stack.Screen name = 'Profile' component={Profile} />
+                <Stack.Screen name = 'Editprofile' component={Editprofile}/>
+          
 
              </Stack.Navigator>
         </NavigationContainer>

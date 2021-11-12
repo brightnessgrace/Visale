@@ -1,13 +1,15 @@
 
-import React from 'react';
+import React ,{useState} from 'react';
 import {View,Text,StyleSheet,Image, SafeAreaView,ScrollView, 
-  Dimensions,TextInput, TouchableOpacity} from 'react-native' ;
+  Dimensions,TextInput, TouchableOpacity,alert} from 'react-native' ;
 import Icons from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
 const logo = require('../../images/logo.png')
 
 console.log ('nimefika');
+
 
 const SignInScreen = () => {
 
@@ -17,15 +19,119 @@ const SignInScreen = () => {
      
     navigation.navigate('SignUp')
   }
-  const onSignInPressed = () => {
 
-    navigation.navigate('Profile')
-    
-  }
   const onForgotPasswordPressed = () => {
     
     navigation.navigate('ForgotPassword')
   }
+
+ const [data,setData] = useState({
+     username: '',
+     password: '',
+     isValiduser: true,
+     isValidPassword: true,
+     secureTextEntry:true,
+     checkTextInputChange: false,
+ });
+
+
+ const textInputChange = (val) => {
+  if( val.trim().length >= 4 ) {
+      setData({
+          ...data,
+          username: val,
+          check_textInputChange: true,
+          isValidUser: true
+      });
+  } else {
+      setData({
+          ...data,
+          username: val,
+          check_textInputChange: false,
+          isValidUser: false
+      });
+  }
+}
+
+const handlePasswordChange = (val) => {
+  if (val.trim().length >= 4){
+    setData({
+       ...data,
+       password: val,
+       isValidPassword:true
+
+    });
+  } else {
+     setData({
+       ...data,
+       password: val,
+       isValidPassword:false
+     });
+  }
+}
+
+const handleValidUser = (val) => {
+  if (val.trim().length >= 5){
+    setData({
+       ...data,
+       isValiduser:true
+
+    });
+  } else {
+     setData({
+       ...data,
+       isValiduser:false
+     });
+  }
+}
+
+const [message, setMessage] = useState ('Incorrect Username or Password!');
+
+const onSignInPressed = () => {
+
+ // console.log('data',data);
+//navigation.navigate('Profile')
+
+signIn(data.username,data.password)
+
+}
+
+
+const signIn = async() =>{
+
+  if (data.username!=" " && data.password!=" "){
+        
+        username = data.username
+        password = data.password
+
+        //console.log(password);
+       
+       await fetch('http://192.168.14.44/visaleapi/api/index.php/v1/users',{
+           method: 'POST',
+           headers:{
+             'Accept': 'application/json',
+             'Content-Type' : 'application/json'
+           },
+           body:JSON.stringify({
+             'username':username,
+             'password':password
+           })
+
+       }).then(res => res.json())
+       .then(resData => {
+        // console.log(password)
+         navigation.navigate('Profile')
+       })
+    console.log(username,password);
+
+  } else {
+
+    console.log('wow5');
+  }
+}
+
+ 
+
 
     return (
       <ScrollView showsVerticalScrollIndicator = {false} style={{backgroundColor:'#133743'}}>
@@ -46,19 +152,36 @@ const SignInScreen = () => {
                 
             <Icons name = "user" size = {24} style={styles.icons}/>
 
-                <TextInput style={styles.textInput} 
+                <TextInput 
+                   onChangeText = {(val) => textInputChange(val)}
+                   onEndEditing={(e)=>handleValidUser(e.nativeEvent.text)}
+                    style={styles.textInput} 
                     placeholder = "Username"
                     placeholderTextColor="#CCCCFF"/>
+                  
+                  
                </View>
+               {data.isValiduser ? null :
+               <Animatable.View animation="fadeInLeft" duration={500}>
+               <Text style={styles.errorMsg}>Username Can Not Be Empty or Incomplete</Text>
+               </Animatable.View>
+                 }
 
             <View style = {styles.form}>  
              <Icons name = "lock1" size = {24} style={styles.icons}/> 
-                <TextInput style={styles.textInput} 
+                <TextInput 
+                    onChangeText = {(val) => handlePasswordChange(val)}
+                    secureTextEntry={true}
+                    style={styles.textInput} 
                     placeholder = "Password"
                     placeholderTextColor="#CCCCFF"
                     />
                 </View>
-
+               {data.isValidPassword ? null :
+                <Animatable.View animation="fadeInLeft" duration={500}>
+               <Text style={styles.errorMsg}>Password Has to be 8 Characters Long</Text>
+               </Animatable.View>
+                      }
                
                 <View>
                     <TouchableOpacity onPress = {onSignInPressed}>
@@ -144,7 +267,7 @@ const styles = StyleSheet.create ({
 
    logo:{
        flex:2,
-       marginTop:-30,
+       marginTop:'-8%',
        backgroundColor:'#133743',
        justifyContent:'center',
        alignItems: 'center',
@@ -154,7 +277,7 @@ const styles = StyleSheet.create ({
    stylelogo:{
          width:width_logo,
          height:height_logo,
-         marginLeft: 10,
+         marginLeft: '3%',
           
    },
 
@@ -163,13 +286,14 @@ const styles = StyleSheet.create ({
     color:'#F5F5F5',
     fontSize:28,
     fontWeight:'bold',
-    marginBottom:5,
+  
      
   },
    login:{
        flex:3,
        backgroundColor:'#133743',
-       marginTop:20,
+       marginTop:'3%',
+      
    },
 
    form :{
@@ -177,10 +301,9 @@ const styles = StyleSheet.create ({
          borderRadius:10,
          borderWidth:2,
          borderColor:'#ddd',
-         marginBottom: 10,
-         marginTop: 10,
-         marginStart:10,
-         marginEnd:5,
+         marginBottom: '2%',
+         marginEnd:'5%',
+         marginStart:'5%',    
         alignContent:'center'
         
    },textInput:{
@@ -194,7 +317,7 @@ const styles = StyleSheet.create ({
    },
    button:{
       
-       width: 400,
+       width: 390,
        height: height_button,
        justifyContent: 'center',
        alignItems: 'center',
@@ -222,18 +345,18 @@ const styles = StyleSheet.create ({
     marginTop:10
 },
  socialstyle:{
-        marginLeft: 10,
-        marginTop:15,
-        marginBottom:10,
+        marginHorizontal: '3%',
+        marginVertical:'3%',      
         flexDirection:"row",
  },
  socialwords:{
-    marginLeft: 15,
-    marginTop: 5,
+    marginLeft: '5%',
+    marginTop: '1%',
+
  },
 
  socialbutn:{
-    width: 400,
+    width: 390,
     height: height_button,
     justifyContent: 'center',
     alignItems: 'center',
@@ -249,9 +372,17 @@ const styles = StyleSheet.create ({
     color: "#F5F5F5",
     fontWeight:"bold",
     fontSize:16,
-    marginLeft:60,
-    marginVertical:10,
+    marginLeft:'10%',
+    marginVertical:'2%',
     alignItems: "center",
-  }
+  },
+  errorMsg: {
+    color: '#FF0000',
+    fontSize: 14,
+    marginLeft:'12%',
+    marginBottom:'1%',
+    alignSelf:'flex-start',
+  
+},
 
 });

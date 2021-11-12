@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,{useState} from 'react';
 import {View , Text, ScrollView , Dimensions, Image, SafeAreaView, TouchableOpacity,TextInput,StyleSheet} from 'react-native'
 import Icons from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -22,6 +22,121 @@ const ForgotPassword =() => {
       navigation.navigate('Token');
     }
 
+    const [data , setData] = useState ({
+           phonenumber:'',
+           emailaddress:'',
+           isValidemail:true,
+           isValidPnonenumber:true
+
+    })
+
+ 
+
+    const onSendTokenPressed = () => {
+     
+      console.log('ikohapa');
+
+      resetPassword (data.emailaddress,data.phonenumber)
+    }
+
+    const emailInputChange = (val) => {
+
+      if(val.trim().length >= 4){
+          setData({
+              ...data,
+              emailaddress:val,
+              isValidemail:true,
+
+          }) ;
+      } else {
+
+          setData({
+              ...data,
+              emailaddress:val,
+              isValidemail:false
+          })
+      }
+  }
+
+  const phoneInputChange = (val) => {
+
+    if(val.trim().length >= 4){
+        setData({
+            ...data,
+            emailaddress:val,
+            isValidemail:true,
+
+        }) ;
+    } else {
+
+        setData({
+            ...data,
+            emailaddress:val,
+            isValidemail:false
+        })
+    }
+}
+
+    const resetPassword = async() => {
+
+      if (data.emailaddress !== " " && data.phonenumber !== " ") {
+
+           emailaddress = data.emailaddress
+           phone_number = data.phonenumber
+
+        await fetch("http://192.168.14.44/visaleapi/api/index.php/v1/reset/userexist",{
+
+          method: 'POST',
+          headers:{
+            'Accept': 'application/json',
+            'Content-Type' : 'application/json'
+          },
+          body:JSON.stringify({
+
+            'email':emailaddress,
+            'phone_number':phone_number,
+          })
+              
+          }).then(res => res.json())
+          .then(resData => {
+
+            console.log('email and phone number valid')
+            //setMessage (resData.message);
+        })
+
+      } else {
+            
+        alert('Phone NUmber or Email Addres does not Match');
+
+      }
+
+    }
+
+    const checkValidEmail = (val) =>{
+
+      let reg =  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+
+      if (reg.test(val) === false){
+           setData({
+            ...data,
+            isValidemail:false
+
+           }) ;  
+         
+      } else {
+
+        setData({
+          ...data,
+            isValidemail:true
+        })
+
+      }
+
+    }
+
+ 
+  
+
     return (
     
         <ScrollView style={{backgroundColor:'#133743'}}>
@@ -40,6 +155,8 @@ const ForgotPassword =() => {
                     <View style={styles.form}>
                             <Ionicons name = "mail" size = {24} style={styles.icons}/> 
                                 <TextInput 
+                                onChangeText = {(val) =>emailInputChange(val)}
+                                onEndEditing ={(e) => checkValidEmail(e.nativeEvent.text)}
                                 placeholder ="Email" 
                                 placeholderTextColor="#CCCCFF"
                                 style={styles.textInput} />
@@ -48,6 +165,7 @@ const ForgotPassword =() => {
                     <View style={styles.form}>
                             <Icons name = "lock1" size = {24} style={styles.icons}/> 
                                 <TextInput 
+                                onChangeText = {(val) =>phoneInputChange(val)}
                                 placeholder ="Phone Number" 
                                 placeholderTextColor="#CCCCFF"
                                 style={styles.textInput} />
@@ -66,7 +184,7 @@ const ForgotPassword =() => {
                                         </LinearGradient></View>
                                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={onSendEmail}>
+                        <TouchableOpacity onPress={onSendTokenPressed}>
                                         <View style={styles.bottonvw}>
                                         <LinearGradient 
                                         colors = {['#f5f5f5','#133743']} 
@@ -106,6 +224,8 @@ const {width} = Dimensions.get("screen");
 
 const width_logo = width * 0.5;
 
+const width_button = width * 0.9;
+
 const styles = StyleSheet.create({
 
     container:{
@@ -134,7 +254,7 @@ const styles = StyleSheet.create({
     color:'#F5F5F5',
     fontSize:28,
     fontWeight:'bold',
-    marginBottom:10,
+    marginBottom:'5%',
      
   },
 
@@ -148,10 +268,9 @@ const styles = StyleSheet.create({
           borderRadius:10,
           borderWidth:2,
           borderColor:'#ddd',
-          marginBottom: 20,
-          marginTop: 20,
-          marginStart:10,
-          marginEnd:5,
+          marginBottom: '5%',
+          marginTop: '5%',
+          marginHorizontal:'5%',
          alignContent:'center'
          
     },textInput:{
@@ -159,7 +278,7 @@ const styles = StyleSheet.create({
     },
 
     icons:{
-        marginTop:10,
+        marginTop:'2%',
         marginEnd:5,
         marginStart:2,
         color:'#DDD',
@@ -170,17 +289,19 @@ const styles = StyleSheet.create({
       },
 
       bottonvw:{
-        marginTop:20,
-        marginLeft:10,
+     
         backgroundColor:'#133743',
+        marginHorizontal:'5%',
  },
  button:{
     
-     width: 400,
+     width: width_button,
      height: height_button,
      justifyContent: 'center',
      alignItems: 'center',
      borderRadius: 20,
+     marginTop:'10%',
+    
      flexDirection: 'row'
  },
  btntext:{

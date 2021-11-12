@@ -9,11 +9,18 @@ const profilepic = require ('../../images/brightness.jpg')
 
 
 const Profile = () => {
+  
   const navigation = useNavigation();
 
   const onLogoutPressed = () => {
      
     navigation.navigate('SignIn')
+  }
+
+  const onSettingsPressed = ()=>{
+
+    navigation.navigate('Editprofile');
+
   }
 
  return (
@@ -92,7 +99,7 @@ const Profile = () => {
               </View>
               </TouchableOpacity>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={onSettingsPressed}>
               <View style={{flexDirection:'row', alignItems : 'center'}}>
               <Icon name = 'setting'size = {24} color = "gold" />
               <Text style={styles.textmenu}>Settings</Text>
