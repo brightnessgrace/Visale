@@ -1,9 +1,10 @@
 import React ,{useState} from 'react';
-import {View , Text, ScrollView , Dimensions, Image, SafeAreaView, TouchableOpacity,TextInput,StyleSheet} from 'react-native'
+import {View , Text, ScrollView , Dimensions, Image, SafeAreaView, TouchableOpacity,TextInput,StyleSheet, ToastAndroid} from 'react-native'
 import Icons from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from "react-native-linear-gradient";
+import * as Animatable from 'react-native-animatable';
 import { useNavigation } from "@react-navigation/native";
 
 
@@ -22,23 +23,18 @@ const ForgotPassword =() => {
       navigation.navigate('Token');
     }
 
+
     const [data , setData] = useState ({
-           phonenumber:'',
+           
            emailaddress:'',
+           phonenumber:'',
            isValidemail:true,
-           isValidPnonenumber:true
+           isValidPhonenumber:true
 
     })
 
+    //const [message,setMessage] = useState(false)
  
-
-    const onSendTokenPressed = () => {
-     
-      console.log('ikohapa');
-
-      resetPassword (data.emailaddress,data.phonenumber)
-    }
-
     const emailInputChange = (val) => {
 
       if(val.trim().length >= 4){
@@ -63,26 +59,38 @@ const ForgotPassword =() => {
     if(val.trim().length >= 4){
         setData({
             ...data,
-            emailaddress:val,
-            isValidemail:true,
+            phonenumber:val,
+            isValidPhonenumber:true,
 
         }) ;
     } else {
 
         setData({
             ...data,
-            emailaddress:val,
-            isValidemail:false
+            phonenumber:val,
+            isValidPhonenumber:false
         })
     }
 }
+
+
+
+const onSendTokenPressed = () => {
+     
+  console.log(data.emailaddress);
+
+  resetPassword (data.emailaddress,data.phonenumber)
+}
+
 
     const resetPassword = async() => {
 
       if (data.emailaddress !== " " && data.phonenumber !== " ") {
 
-           emailaddress = data.emailaddress
+           email = data.emailaddress
            phone_number = data.phonenumber
+
+           console.log(data.emailaddress);
 
         await fetch("http://192.168.14.44/visaleapi/api/index.php/v1/reset/userexist",{
 
@@ -93,7 +101,7 @@ const ForgotPassword =() => {
           },
           body:JSON.stringify({
 
-            'email':emailaddress,
+            'email':email,
             'phone_number':phone_number,
           })
               
@@ -101,38 +109,50 @@ const ForgotPassword =() => {
           .then(resData => {
 
             console.log('email and phone number valid')
-            //setMessage (resData.message);
+            ToastAndroid.show('Token has been Successfull sent To Your Email',
+            ToastAndroid.LONG)
+
+            navigation.navigate('Token')
+        
+
         })
 
       } else {
             
-        alert('Phone NUmber or Email Addres does not Match');
+       //data.message = 'Email or Phone Number is Invalid'
+         
+        ToastAndroid.show('failed')
+        ToastAndroid.SHORT
+         navigation.navigate('ForgotPassword')
 
       }
 
     }
+
 
     const checkValidEmail = (val) =>{
 
       let reg =  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-
+    
       if (reg.test(val) === false){
            setData({
             ...data,
             isValidemail:false
-
+    
            }) ;  
          
       } else {
-
+    
         setData({
           ...data,
             isValidemail:true
         })
-
+    
       }
-
+    
     }
+  
+
 
  
   
@@ -194,13 +214,16 @@ const ForgotPassword =() => {
                                         </LinearGradient></View>
                                         </TouchableOpacity>            
                 
-                    </View>          
+                    </View>   
+
+                      
                    
                    </View>  
 
                      <View styles={styles.footer}>
-                   
-                   
+                     
+                     
+
                    </View>   
              
           </View>
@@ -312,9 +335,27 @@ const styles = StyleSheet.create({
 
     footer:{
         flex:2,
+   
 
-    }
+    },
 
+    respond:{
+       marginHorizontal:'5%',
+       marginTop:'10%',
+       justifyContent:'center',
+       borderRadius: 10,
+       
+    },
+
+    sucessMsg: {
+      color: 'black',
+      fontSize: 14,
+      marginLeft:'15%',
+      marginTop:'5%',
+      marginBottom:'1%',
+      alignSelf:'flex-start',
+    
+  },
 
 
 })

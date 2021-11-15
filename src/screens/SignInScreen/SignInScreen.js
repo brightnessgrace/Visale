@@ -325,7 +325,7 @@ const styles = StyleSheet.create ({
        flexDirection: 'row'
    },
    textstyle:{
-     color: "#F5F5F5",
+     color: "#f5f5f5",
      fontWeight:"bold",
      fontSize:16,
      marginLeft:140,
@@ -352,6 +352,7 @@ const styles = StyleSheet.create ({
  socialwords:{
     marginLeft: '5%',
     marginTop: '1%',
+    color:'black'
 
  },
 

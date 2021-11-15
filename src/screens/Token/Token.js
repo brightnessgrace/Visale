@@ -1,5 +1,5 @@
-import React from 'react';
-import {View , Text, ScrollView , Dimensions, Image, SafeAreaView, TouchableOpacity,TextInput,StyleSheet} from 'react-native'
+import React, { useState } from 'react';
+import {View , Text, ScrollView , Dimensions, Image, SafeAreaView, TouchableOpacity,TextInput,StyleSheet, ToastAndroid} from 'react-native'
 import Icons from 'react-native-vector-icons/AntDesign'
 import LinearGradient from "react-native-linear-gradient";
 import { useNavigation } from '@react-navigation/native';
@@ -11,9 +11,154 @@ const Token = () => {
 
     const navigation = useNavigation();
 
-    const onSignIn = () => {
+    const [data,setData] = useState({
+
+         tokenone:'',
+         tokentwo:'',
+         tokenthree:'',
+         tokenfour:'',
+         tokenfive:'',
+         isValidToken:true
+    })
+
+    const onEnterTokenone = (val) =>{
+      if (val != "")    {
+        setData({
+          ...data,
+             tokenone:val,
+             isValidToken:true
+        })
+      } else {
+        setData({
+          ...data,
+          tokenone:val,
+          isValidToken:false
+        })
+      }
      
-      navigation.navigate('SignIn');
+
+    }
+
+    
+    const onEnterTokentwo = (val) =>{
+      if (val != "")    {
+        setData({
+          ...data,
+          tokentwo:val,
+             isValidToken:true
+        })
+      } else {
+        setData({
+          ...data,
+          tokentwo:val,
+          isValidToken:false
+        })
+      }
+     
+
+    }
+
+       
+    const onEnterTokenthree = (val) =>{
+      if (val != "")    {
+        setData({
+          ...data,
+            tokenthree:val,
+             isValidToken:true
+        })
+      } else {
+        setData({
+          ...data,
+          tokenthree:val,
+          isValidToken:false
+        })
+      }
+     
+
+    }
+
+    const onEnterTokenfour = (val) =>{
+      if (val != "")    {
+        setData({
+          ...data,
+          tokenfour:val,
+             isValidToken:true
+        })
+      } else {
+        setData({
+          ...data,
+          tokenfour:val,
+          isValidToken:false
+        })
+      }
+     
+
+    }
+
+    const onEnterTokenfive = (val) =>{
+      if (val != "")    {
+        setData({
+          ...data,
+          tokenfive:val,
+             isValidToken:true
+        })
+      } else {
+        setData({
+          ...data,
+          tokenfive:val,
+          isValidToken:false
+        })
+      }
+     
+
+    }
+
+    const onSignIn = () => {
+
+
+      ValidateToken(data.tokenone,data.tokentwo,data.tokenthree,data.tokenfour, data.tokenfive)
+    }
+ 
+
+    
+
+    const ValidateToken = async()=>{
+
+            if (data.tokenone != " " && data.tokentwo != " "&& data.tokenthree != " " && data.tokenfour != " " && data.tokenfive != " "){
+
+              tokenone = data.tokenone+data.tokentwo+ data.tokenthree+data.tokenfour+data.tokenfive;
+
+            console.log (tokenone);
+
+            await fetch('http://192.168.14.44/visaleapi/api/index.php/v1/reset/tokenvalidate',{
+
+            method: 'POST',
+            headers:{
+              'Accept': 'application/json',
+              'Content-Type' : 'application/json'
+            },
+            body:JSON.stringify({
+              'password_reset_token':tokenone,
+         
+            })
+ 
+        }).then(res => res.json())
+        .then(resData => {
+       
+           ToastAndroid.show('Token Accepted Successful,',
+            ToastAndroid.LONG)
+
+          navigation.navigate('ChangePassword',{
+
+            password_reset_token:tokenone
+            
+          })
+
+            })
+          } else {
+
+            alert ('Incorrect Token');
+          }
     }
 
 return(
@@ -35,7 +180,7 @@ return(
                  
               <View style={styles.formd}>
                           <TextInput 
-                                
+                                onChangeText={(val) => onEnterTokenone(val)}
                                 placeholderTextColor="#CCCCFF"
                                 style={styles.textInput} />
                          
@@ -43,7 +188,7 @@ return(
 
                       <View style={styles.formd}>
                       <TextInput 
-                                
+                               onChangeText = {(val) => onEnterTokentwo(val)} 
                                 placeholderTextColor="#CCCCFF"
                                 style={styles.textInput} />
                          
@@ -51,7 +196,7 @@ return(
 
                       <View style={styles.formd}>
                       <TextInput 
-                                
+                                  onChangeText = {(val) => onEnterTokenthree(val)} 
                                 placeholderTextColor="#CCCCFF"
                                 style={styles.textInput} />
                          
@@ -59,7 +204,15 @@ return(
                       
                       <View style={styles.formd}>
                       <TextInput 
-                                
+                                  onChangeText = {(val) => onEnterTokenfour(val)} 
+                                placeholderTextColor="#CCCCFF"
+                                style={styles.textInput} />
+                         
+                        </View>
+
+                        <View style={styles.formd}>
+                      <TextInput 
+                                onChangeText = {(val) => onEnterTokenfive(val)} 
                                 placeholderTextColor="#CCCCFF"
                                 style={styles.textInput} />
                          
@@ -158,14 +311,14 @@ const styles = StyleSheet.create({
          marginVertical:20,
           height:150,
 
-          marginLeft: 10,
+          marginLeft: '1%',
        
          
     },formd:{
-        width:70,
+        width:50,
         height:100,
-        marginVertical:20,
-        marginLeft:25,
+        marginVertical:'10%',
+        marginHorizontal:'4%',
         borderRadius:10,
         borderColor:'#ddd',
         borderWidth:2,
@@ -173,6 +326,8 @@ const styles = StyleSheet.create({
     },
     textInput:{
       color:'#F5F5F5',
+      fontSize:30,
+      alignSelf:'center'
     
     },
 
